@@ -1,5 +1,5 @@
 <script setup>
-const props = defineProps(['menu', 'maps']);
+const props = defineProps(['menuOpen', 'menu', 'maps']);
 const emit = defineEmits(['toggleGroup']);
 
 function toggleGroup(id) {
@@ -12,8 +12,7 @@ function toggleGroup(id) {
 </script>
 
 <template>
-    <!-- <div class="hidden overflow-y-auto" id="menu"></div> -->
-    <div class="overflow-y-auto flex-shrink-0" id="menu">
+    <div class="overflow-y-auto flex-shrink-0" id="menu" :class="{ 'hidden': !menuOpen }">
         <div class="p-4 text-center text-white shadow-lg" id="header">
             <div>
                 <h2 class="text-xs uppercase">Genshin Impact &bull; Carte&nbsp;Interactive</h2>

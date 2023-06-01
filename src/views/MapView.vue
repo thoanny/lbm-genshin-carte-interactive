@@ -9,12 +9,16 @@ const route = useRoute();
 const LBM_API = 'https://api.lebusmagique.fr';
 const UPLOADS = LBM_API + '/uploads/api/genshin/maps';
 
+const mapName = (typeof route.params.slug !== 'undefined') ? route.params.slug : 'teyvat';
+
 let genshinMap;
 let icons = {};
 let groups = {};
 
 const maps = ref([]);
 const menu = ref([]);
+const menuOpen = ref(true);
+const aboutPopupOpen = ref(false);
 const loading = ref(true);
 const userData = ref(null);
 
@@ -36,9 +40,36 @@ function handleToggleGroup(m) {
   }
 }
 
-onMounted(() => {
+function handleZoomIn() {
+  // console.log(genshinMap, genshinMap.getZoom(), genshinMap.getMinZoom(), genshinMap.getMaxZoom())
+  if (genshinMap.getZoom() < genshinMap.getMaxZoom()) {
+    genshinMap.setZoom(genshinMap.getZoom() + 1);
+  }
+}
 
-  const mapName = (typeof route.params.slug !== 'undefined') ? route.params.slug : 'teyvat';
+function handleZoomOut() {
+  if (genshinMap.getZoom() > genshinMap.getMinZoom()) {
+    genshinMap.setZoom(genshinMap.getZoom() - 1);
+  }
+}
+
+function handleMenu() {
+  menuOpen.value = !menuOpen.value;
+}
+
+function handleResetUserMarkers() {
+  alert('TODO');
+}
+
+function handleAboutPopup() {
+  aboutPopupOpen.value = true;
+}
+
+function handleGoTo(x, y, z) {
+  genshinMap.flyTo(unproject([x, y]), z);
+}
+
+onMounted(() => {
 
   fetch(LBM_API + '/api/genshin/map/' + mapName).then(res => res.json()).then(data => {
 
@@ -147,19 +178,116 @@ onMounted(() => {
     <span class="btn btn-ghost loading">Chargement de la carte en cours...</span>
   </div>
   <div class="flex h-screen">
-    <Navigation :menu="menu" :maps="maps" @toggle-group="handleToggleGroup" />
+    <Navigation :menuOpen="menuOpen" :menu="menu" :maps="maps" @toggle-group="handleToggleGroup" />
     <div id="map-wrap">
+      <div class="toolbar flex flex-col gap-3 absolute top-3 left-3">
+        <div class="tooltip tooltip-right" data-tip="Afficher/Masquer le menu">
+          <button class="btn btn-accent btn-square shadow btn-sm" @click="handleMenu">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+              <path fill-rule="evenodd"
+                d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10zm0 5.25a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75a.75.75 0 01-.75-.75z"
+                clip-rule="evenodd" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <div class="tooltip tooltip-right" data-tip="Zoomer">
+            <button class="btn btn-accent btn-square shadow btn-sm" @click="handleZoomIn">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+                <path
+                  d="M9 6a.75.75 0 01.75.75v1.5h1.5a.75.75 0 010 1.5h-1.5v1.5a.75.75 0 01-1.5 0v-1.5h-1.5a.75.75 0 010-1.5h1.5v-1.5A.75.75 0 019 6z" />
+                <path fill-rule="evenodd"
+                  d="M2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9zm7-5.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11z"
+                  clip-rule="evenodd" />
+              </svg>
+            </button>
+          </div>
+          <div class="tooltip tooltip-right" data-tip="Dézoomer">
+            <button class="btn btn-accent btn-square shadow btn-sm" @click="handleZoomOut">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+                <path d="M6.75 8.25a.75.75 0 000 1.5h4.5a.75.75 0 000-1.5h-4.5z" />
+                <path fill-rule="evenodd"
+                  d="M9 2a7 7 0 104.391 12.452l3.329 3.328a.75.75 0 101.06-1.06l-3.328-3.329A7 7 0 009 2zM3.5 9a5.5 5.5 0 1111 0 5.5 5.5 0 01-11 0z"
+                  clip-rule="evenodd" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="tooltip tooltip-right" data-tip="Réinitialiser le suivi des marqueurs">
+          <button class="btn btn-accent btn-square shadow btn-sm" @click="handleResetUserMarkers">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+              <path fill-rule="evenodd"
+                d="M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193V3.75A2.75 2.75 0 0011.25 1h-2.5zM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4zM8.58 7.72a.75.75 0 00-1.5.06l.3 7.5a.75.75 0 101.5-.06l-.3-7.5zm4.34.06a.75.75 0 10-1.5-.06l-.3 7.5a.75.75 0 101.5.06l.3-7.5z"
+                clip-rule="evenodd" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="tooltip tooltip-right" data-tip="À propos">
+          <button class="btn btn-accent btn-square shadow btn-sm" @click="handleAboutPopup">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+              <path fill-rule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z"
+                clip-rule="evenodd" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="flex flex-col gap-1" v-if="mapName == 'teyvat'">
+          <div class="tooltip tooltip-right" data-tip="Zoomer sur Mondstadt">
+            <button class="btn btn-accent btn-circle shadow btn-sm ff-genshin"
+              @click="handleGoTo(9551, 4389, 5)">M</button>
+          </div>
+          <div class="tooltip tooltip-right" data-tip="Zoomer sur Liyue">
+            <button class="btn btn-accent btn-circle shadow btn-sm ff-genshin"
+              @click="handleGoTo(8414, 7222, 5)">L</button>
+          </div>
+          <div class="tooltip tooltip-right" data-tip="Zoomer sur Inazuma">
+            <button class="btn btn-accent btn-circle shadow btn-sm ff-genshin"
+              @click="handleGoTo(13210, 9878, 5)">I</button>
+          </div>
+          <div class="tooltip tooltip-right" data-tip="Zoomer sur Sumeru">
+            <button class="btn btn-accent btn-circle shadow btn-sm ff-genshin"
+              @click="handleGoTo(5878, 7046, 5)">S</button>
+          </div>
+        </div>
+      </div>
       <div id="map"></div>
     </div>
   </div>
+
+  <input type="checkbox" id="about-modal" class="modal-toggle" v-model="aboutPopupOpen" />
+  <label for="about-modal" class="modal cursor-pointer">
+    <label class="modal-box relative" for="">
+      <h4 class="text-xl font-bold">Genshin Impact • Carte Interactive</h4>
+      <p>Réalisée par Thoanny pour <a href="https://gaming.lebusmagique.fr" target="_blank"
+          class="font-semibold underline">Le Bus
+          Magique</a>. <br />Mise à jour par l'équipe LBM Gaming.</p>
+      <h4 class="text-xl font-bold mt-4">Suivi des marqueurs</h4>
+      <p>Si vous n'êtes pas connecté·e, cette carte interactive utilise la fonction "localStorage" pour enregistrer le
+        suivi de vos
+        marqueurs. Ces informations sont stockées directement dans votre navigateur.</p>
+      <h4 class="text-xl font-bold mt-4">Se connecter avec Discord</h4>
+      <p>En vous identifiant avec Discord, le suivi de vos marqueurs ainsi que l'état de votre menu
+        (éléments actifs/inactifs) sont enregistrés dans une base de données, pour vous offrir une expérience continue
+        entre vos différentes sessions.</p>
+      <div class="modal-action">
+        <label for="about-modal" class="btn btn-block">Fermer</label>
+      </div>
+    </label>
+  </label>
 </template>
 
 <style scoped>
 #map-wrap {
   width: 100%;
+  position: relative;
 }
 
 #map {
+  background: #000;
   height: 100vh;
   width: 100%;
   outline: 0;
@@ -167,6 +295,10 @@ onMounted(() => {
 }
 
 #loading {
+  z-index: 420;
+}
+
+.toolbar {
   z-index: 410;
 }
 </style>
