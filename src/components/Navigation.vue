@@ -16,8 +16,7 @@ function toggleGroup(id) {
     <div class="overflow-y-auto flex-shrink-0" id="menu">
         <div class="p-4 text-center text-white shadow-lg" id="header">
             <div>
-                <h1 title="J'ici" class="text-2xl">G·I·C·I</h1>
-                <h2 class="text-xs uppercase mt-2">Genshin Impact &bull; Carte&nbsp;Interactive</h2>
+                <h2 class="text-xs uppercase">Genshin Impact &bull; Carte&nbsp;Interactive</h2>
             </div>
         </div>
 
