@@ -6,7 +6,8 @@ import { useRoute } from 'vue-router';
 
 const route = useRoute();
 
-const UPLOADS = 'http://127.0.0.1:8000/uploads/api/genshin/maps';
+const LBM_API = 'https://api.lebusmagique.fr';
+const UPLOADS = LBM_API + '/uploads/api/genshin/maps';
 
 let genshinMap;
 let icons = {};
@@ -39,7 +40,7 @@ onMounted(() => {
 
   const mapName = (typeof route.params.slug !== 'undefined') ? route.params.slug : 'teyvat';
 
-  fetch('http://127.0.0.1:8000/api/genshin/map/' + mapName).then(res => res.json()).then(data => {
+  fetch(LBM_API + '/api/genshin/map/' + mapName).then(res => res.json()).then(data => {
 
     genshinMap = new L.Map('map', {
       center: data.map.center,
@@ -47,7 +48,7 @@ onMounted(() => {
       zoomControl: false
     });
 
-    L.tileLayer(data.map.tiles + '/{z}/{x}/{y}.jpg', {
+    L.tileLayer(LBM_API + data.map.tiles + '/{z}/{x}/{y}.jpg', {
       attribution: '<a href="https://gaming.lebusmagique.fr">LBM Gaming</a>',
       maxZoom: data.map.maxZoom,
       minZoom: data.map.minZoom,
