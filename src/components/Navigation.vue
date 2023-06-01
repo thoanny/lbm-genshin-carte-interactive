@@ -1,5 +1,5 @@
 <script setup>
-const props = defineProps(['menu']);
+const props = defineProps(['menu', 'maps']);
 const emit = defineEmits(['toggleGroup']);
 
 function toggleGroup(id) {
@@ -22,16 +22,29 @@ function toggleGroup(id) {
         </div>
 
         <div class="p-4">
-            <ul class="flex flex-col gap-2" id="navMenu">
-                <li v-for="m in menu" :class="m.type" class="flex gap-2">
-                    <a href="#!" @click.prevent="toggleGroup(m.group)" v-if="m.type === 'group'"
-                        class="btn btn-accent btn-block btn-sm gap-2" :class="{ 'grayscale opacity-50': !m.active }">
-                        <img :src="m.icon" alt="" class="h-4 w-4">
-                        <span>{{ m.title }}</span>
+
+            <ul class="grid grid-cols-4 gap-2">
+                <li v-for="m in maps" class="tooltip" :data-tip="m.name">
+                    <a :href="$router.resolve({ name: 'map', params: { slug: m.slug } }).href"
+                        class="btn btn-block btn-square gap-2" :class="{ 'btn-outline': !m.active }">
+                        <img :src="m.icon" alt="" class="w-8 h-8 grayscale"
+                            :class="{ 'brightness-50': !m.active, 'brightness-200': m.active }" />
                     </a>
+                </li>
+            </ul>
+
+            <ul class="grid grid-cols-4 gap-2 mt-2">
+                <li v-for="m in menu" :class="{ 'col-span-4 ff-genshin text-sm': m.type === 'title' }">
+                    <span v-if="m.type === 'group'" class="tooltip" :data-tip="m.title">
+                        <a href="#!" @click.prevent="toggleGroup(m.group)" class="btn btn-accent btn-square gap-2"
+                            :class="{ 'grayscale opacity-50': !m.active }">
+                            <img :src="m.icon" alt="" class="h-8 w-8">
+                        </a>
+                    </span>
                     <span v-else>{{ m.title }}</span>
                 </li>
             </ul>
+
             <ul class="grid grid-cols-2 gap-2 space-y-2 text-gray-600 text-sm">
                 <li class="text-xs col-span-2 pt-4 text-center uppercase font-semibold leading-5">
                     ·&nbsp;·&nbsp;·<br /><span id="total-visits">0</span>&nbsp;visites<br /><span

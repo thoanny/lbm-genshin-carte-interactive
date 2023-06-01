@@ -2,6 +2,9 @@
 import L from 'leaflet';
 import { ref, onMounted } from 'vue';
 import Navigation from '@/components/Navigation.vue';
+import { useRoute } from 'vue-router';
+
+const route = useRoute();
 
 const UPLOADS = 'http://127.0.0.1:8000/uploads/api/genshin/maps';
 
@@ -9,6 +12,7 @@ let genshinMap;
 let icons = {};
 let groups = {};
 
+const maps = ref([]);
 const menu = ref([]);
 const loading = ref(true);
 const userData = ref(null);
@@ -33,7 +37,9 @@ function handleToggleGroup(m) {
 
 onMounted(() => {
 
-  fetch('http://127.0.0.1:8000/api/genshin/map/teyvat').then(res => res.json()).then(data => {
+  const mapName = (typeof route.params.slug !== 'undefined') ? route.params.slug : 'teyvat';
+
+  fetch('http://127.0.0.1:8000/api/genshin/map/' + mapName).then(res => res.json()).then(data => {
 
     genshinMap = new L.Map('map', {
       center: data.map.center,
@@ -66,6 +72,14 @@ onMounted(() => {
     });
 
     // Création du menu
+    data.maps.forEach((m) => {
+      maps.value.push({
+        name: m.name,
+        slug: m.slug,
+        icon: UPLOADS + '/icons/' + m.iconUrl,
+        active: m.slug === mapName
+      });
+    });
     data.sections.forEach(section => {
       menu.value.push({
         type: 'title',
@@ -132,7 +146,7 @@ onMounted(() => {
     <span class="btn btn-ghost loading">Chargement de la carte en cours...</span>
   </div>
   <div class="flex h-screen">
-    <Navigation :menu="menu" @toggle-group="handleToggleGroup" />
+    <Navigation :menu="menu" :maps="maps" @toggle-group="handleToggleGroup" />
     <div id="map-wrap">
       <div id="map"></div>
     </div>
