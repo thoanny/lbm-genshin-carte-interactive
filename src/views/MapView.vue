@@ -2,6 +2,8 @@
 import L from 'leaflet';
 import { ref, onMounted } from 'vue';
 import Navigation from '@/components/Navigation.vue';
+import Login from '@/components/Login.vue';
+import Register from '@/components/Register.vue';
 import { useRoute } from 'vue-router';
 
 const route = useRoute();
@@ -18,9 +20,9 @@ let groups = {};
 const maps = ref([]);
 const menu = ref([]);
 const menuOpen = ref(true);
-const aboutPopupOpen = ref(false);
 const loading = ref(true);
-const userData = ref(null);
+const modal = ref(null);
+const markersCount = ref(0);
 
 // Leaflet functions
 
@@ -62,7 +64,11 @@ function handleResetUserMarkers() {
 }
 
 function handleAboutPopup() {
-  aboutPopupOpen.value = true;
+  modal.value = 'about';
+}
+
+function handleModal(name = null) {
+  modal.value = name;
 }
 
 function handleGoTo(x, y, z) {
@@ -163,6 +169,7 @@ onMounted(() => {
       }
 
       marker.addTo(groups[m.groupId]);
+      markersCount.value++;
     });
 
     loading.value = false;
@@ -178,7 +185,8 @@ onMounted(() => {
     <span class="btn btn-ghost loading">Chargement de la carte en cours...</span>
   </div>
   <div class="flex h-screen">
-    <Navigation :menuOpen="menuOpen" :menu="menu" :maps="maps" @toggle-group="handleToggleGroup" />
+    <Navigation :menuOpen="menuOpen" :menu="menu" :maps="maps" :markersCount="markersCount"
+      @toggle-group="handleToggleGroup" @modal="handleModal" />
     <div id="map-wrap">
       <div class="toolbar flex flex-col gap-3 absolute top-3 left-3">
         <div class="tooltip tooltip-right" data-tip="Afficher/Masquer le menu">
@@ -258,9 +266,9 @@ onMounted(() => {
     </div>
   </div>
 
-  <input type="checkbox" id="about-modal" class="modal-toggle" v-model="aboutPopupOpen" />
-  <label for="about-modal" class="modal cursor-pointer">
-    <label class="modal-box relative" for="">
+  <input type="checkbox" class="modal-toggle" :checked="modal === 'about'" />
+  <div class="modal">
+    <div class="modal-box">
       <h4 class="text-xl font-bold">Genshin Impact • Carte Interactive</h4>
       <p>Réalisée par Thoanny pour <a href="https://gaming.lebusmagique.fr" target="_blank"
           class="font-semibold underline">Le Bus
@@ -274,10 +282,24 @@ onMounted(() => {
         (éléments actifs/inactifs) sont enregistrés dans une base de données, pour vous offrir une expérience continue
         entre vos différentes sessions.</p>
       <div class="modal-action">
-        <label for="about-modal" class="btn btn-block">Fermer</label>
+        <button @click="handleModal" class="btn btn-block">Fermer</button>
       </div>
-    </label>
-  </label>
+    </div>
+  </div>
+
+  <input type="checkbox" class="modal-toggle" :checked="modal === 'login'" />
+  <div class="modal">
+    <div class="modal-box relative">
+      <Login @modal="handleModal" />
+    </div>
+  </div>
+
+  <input type="checkbox" class="modal-toggle" :checked="modal === 'register'" />
+  <div class="modal">
+    <div class="modal-box relative">
+      <Register @modal="handleModal" />
+    </div>
+  </div>
 </template>
 
 <style scoped>

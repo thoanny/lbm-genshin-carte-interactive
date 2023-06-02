@@ -1,6 +1,10 @@
 <script setup>
-const props = defineProps(['menuOpen', 'menu', 'maps']);
-const emit = defineEmits(['toggleGroup']);
+import { useUserStore } from '@/stores/user.js';
+
+const props = defineProps(['menuOpen', 'menu', 'maps', 'markersCount']);
+const emit = defineEmits(['toggleGroup', 'modal']);
+
+const user = useUserStore();
 
 function toggleGroup(id) {
     const i = props.menu.findIndex(m => m.type === 'group' && m.group === id);
@@ -9,6 +13,7 @@ function toggleGroup(id) {
         emit('toggleGroup', props.menu[i]);
     }
 }
+
 </script>
 
 <template>
@@ -18,10 +23,28 @@ function toggleGroup(id) {
                 <h2 class="text-xs uppercase">Genshin Impact &bull; Carte&nbsp;Interactive</h2>
             </div>
         </div>
-
         <div class="p-4">
-
             <ul class="grid grid-cols-4 gap-2">
+                <li class="col-span-4" v-if="user.loading">
+                    <button class="btn btn-sm btn-block gap-2 text-xs btn-ghost loading">Connexion...</button>
+                </li>
+                <li class="col-span-2" v-if="!user.loggedIn">
+                    <button class="btn btn-sm btn-block gap-2 text-xs" @click="$emit('modal', 'login')">Connexion</button>
+                </li>
+                <li class="col-span-2" v-if="!user.loggedIn">
+                    <button class="btn btn-sm btn-block gap-2 text-xs"
+                        @click="$emit('modal', 'register')">Inscription</button>
+                </li>
+                <li v-if="user.user" class="col-span-4">
+                    <button class="btn btn-sm btn-block btn-outline gap-2 text-xs">
+                        {{ user.user.nickname }}
+                    </button>
+                </li>
+                <li v-if="user.user" class="col-span-4">
+                    <button class="btn btn-sm btn-block btn-error gap-2 text-xs" @click="user.logout">
+                        Déconnexion
+                    </button>
+                </li>
                 <li v-for="m in maps" class="tooltip" :data-tip="m.name">
                     <a :href="$router.resolve({ name: 'map', params: { slug: m.slug } }).href"
                         class="btn btn-block btn-square gap-2" :class="{ 'btn-outline': !m.active }">
@@ -30,7 +53,6 @@ function toggleGroup(id) {
                     </a>
                 </li>
             </ul>
-
             <ul class="grid grid-cols-4 gap-2 mt-2">
                 <li v-for="m in menu" :class="{ 'col-span-4 ff-genshin text-sm': m.type === 'title' }">
                     <span v-if="m.type === 'group'" class="tooltip" :data-tip="m.title">
@@ -43,12 +65,18 @@ function toggleGroup(id) {
                 </li>
             </ul>
 
-            <ul class="grid grid-cols-2 gap-2 space-y-2 text-gray-600 text-sm">
-                <li class="text-xs col-span-2 pt-4 text-center uppercase font-semibold leading-5">
-                    ·&nbsp;·&nbsp;·<br /><span id="total-visits">0</span>&nbsp;visites<br /><span
-                        id="total">0</span>&nbsp;marqueurs<br /><span id="total-users">0</span>&nbsp;utilisateurs
-                </li>
-            </ul>
+            <div class="text-xs flex flex-col justify-center items-center mt-4 uppercase gap-2 font-bold text-center">
+                <span class="opacity-75">·&nbsp;·&nbsp;·</span>
+                <span class="opacity-75"
+                    v-text="(markersCount > 1) ? markersCount + ' marqueurs' : markersCount + ' marqueur'"></span>
+                <span class="opacity-75">·&nbsp;·&nbsp;·</span>
+                <span class="opacity-75">Fait avec ❤ par <a href="https://thoanny.fr" target="_blank"
+                        class="underline">Thoanny</a><br />pour
+                    <a href="https://gaming.lebusmagique.fr" target="_blank" class="underline">Le Bus
+                        Magique</a></span>
+                <img src="@/assets/logo.png" alt="">
+            </div>
+
         </div>
     </div>
 </template>
