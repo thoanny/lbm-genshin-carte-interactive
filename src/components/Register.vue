@@ -101,36 +101,34 @@ async function handleSubmit() {
             <label class="label">
                 <span class="label-text">Pseudonyme</span>
             </label>
-            <input type="text" placeholder="JohnDoe" class="input input-bordered bg-white" v-model="nickname" />
+            <input type="text" placeholder="JohnDoe" class="input input-bordered" v-model="nickname" />
         </div>
         <div class="form-control">
             <label class="label">
                 <span class="label-text">Adresse e-mail</span>
             </label>
-            <input type="email" placeholder="john@doe.fr" class="input input-bordered bg-white" v-model="email" />
+            <input type="email" placeholder="john@doe.fr" class="input input-bordered" v-model="email" />
         </div>
         <div class="form-control">
             <label class="label">
                 <span class="label-text">Répétez l'adresse e-mail</span>
             </label>
-            <input type="email" placeholder="john@doe.fr" class="input input-bordered bg-white" v-model="emailRepeat" />
+            <input type="email" placeholder="john@doe.fr" class="input input-bordered" v-model="emailRepeat" />
         </div>
         <div class="form-control">
             <label class="label">
                 <span class="label-text">Mot de passe</span>
             </label>
-            <input type="password" placeholder="************" class="input input-bordered bg-white w-full"
-                v-model="password" />
+            <input type="password" placeholder="************" class="input input-bordered" v-model="password" />
         </div>
         <div class="form-control">
             <label class="label">
                 <span class="label-text">Répétez le mot de passe</span>
             </label>
-            <input type="password" placeholder="************" class="input input-bordered bg-white"
-                v-model="passwordRepeat" />
+            <input type="password" placeholder="************" class="input input-bordered" v-model="passwordRepeat" />
         </div>
         <div class="modal-action justify-start">
-            <button class="btn btn-block mt-2" type="submit" :class="{ 'loading': loading }"
+            <button class="btn btn-primary btn-block mt-2" type="submit" :class="{ 'loading': loading }"
                 v-text="(loading) ? 'Veuillez patienter...' : 'S\'inscrire'"></button>
         </div>
     </form>

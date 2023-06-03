@@ -58,16 +58,16 @@ async function handleSubmit() {
             <label class="label">
                 <span class="label-text">Adresse e-mail</span>
             </label>
-            <input type="email" placeholder="john@doe.fr" class="input input-bordered bg-white" v-model="email" />
+            <input type="email" placeholder="john@doe.fr" class="input input-bordered" v-model="email" />
         </div>
         <div class="form-control">
             <label class="label">
                 <span class="label-text">Mot de passe</span>
             </label>
-            <input type="password" placeholder="************" class="input input-bordered bg-white" v-model="password" />
+            <input type="password" placeholder="************" class="input input-bordered" v-model="password" />
         </div>
         <div class="modal-action justify-start">
-            <button class="btn btn-block mt-2" type="submit" :class="{ 'loading': loading }"
+            <button class="btn btn-primary btn-block mt-2" type="submit" :class="{ 'loading': loading }"
                 v-text="(loading) ? 'Veuillez patienter...' : 'Se connecter'"></button>
         </div>
     </form>

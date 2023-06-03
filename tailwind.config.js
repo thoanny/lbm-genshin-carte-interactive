@@ -12,11 +12,11 @@ module.exports = {
     themes: [
       {
         lbmgenshin: {
-          "primary": "#6D28D9",
-          "secondary": "#BE185D",
+          "primary": "#657EF8",
+          "secondary": "#CCA574",
           "accent": "#FFFFFF",
-          "neutral": "#334155",
-          "base-100": "#e8e2d7",
+          "neutral": "#343746",
+          "base-100": "#1B1D2A",
           "info": "#3ABFF8",
           "success": "#36D399",
           "warning": "#FBBD23",

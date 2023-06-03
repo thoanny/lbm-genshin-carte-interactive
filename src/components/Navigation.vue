@@ -18,7 +18,7 @@ function toggleGroup(id) {
 
 <template>
     <div class="overflow-y-auto flex-shrink-0" id="menu" :class="{ 'hidden': !menuOpen }">
-        <div class="p-4 text-center text-white shadow-lg" id="header">
+        <div class="p-4 text-center text-white border-b-2 border-base-300" id="header">
             <div>
                 <h2 class="text-xs uppercase">Genshin Impact &bull; Carte&nbsp;Interactive</h2>
             </div>
@@ -36,28 +36,35 @@ function toggleGroup(id) {
                         @click="$emit('modal', 'register')">Inscription</button>
                 </li>
                 <li v-if="user.user" class="col-span-4">
-                    <button class="btn btn-sm btn-block btn-outline gap-2 text-xs">
-                        {{ user.user.nickname }}
-                    </button>
-                </li>
-                <li v-if="user.user" class="col-span-4">
-                    <button class="btn btn-sm btn-block btn-error gap-2 text-xs" @click="user.logout">
-                        Déconnexion
-                    </button>
+                    <div class="flex gap-2 items-center bg-neutral-focus p-2 rounded-xl">
+                        <div class="avatar">
+                            <div class="w-14 rounded-lg">
+                                <img :src="user.user.avatar" />
+                            </div>
+                        </div>
+                        <div class="flex flex-1 flex-col gap-2 items-center">
+                            <div class="text-sm font-semibold uppercase">
+                                {{ user.user.nickname }}
+                            </div>
+                            <button class="btn btn-xs btn-error gap-2  text-xs btn-block" @click="user.logout">
+                                Déconnexion
+                            </button>
+                        </div>
+                    </div>
                 </li>
                 <li v-for="m in maps" class="tooltip" :data-tip="m.name">
                     <a :href="$router.resolve({ name: 'map', params: { slug: m.slug } }).href"
-                        class="btn btn-block btn-square gap-2" :class="{ 'btn-outline': !m.active }">
-                        <img :src="m.icon" alt="" class="w-8 h-8 grayscale"
-                            :class="{ 'brightness-50': !m.active, 'brightness-200': m.active }" />
+                        class="btn btn-primary btn-block btn-square gap-2"
+                        :class="{ 'opacity-50 hover:opacity-100': !m.active }">
+                        <img :src="m.icon" alt="" class="w-8 h-8 grayscale brightness-200" />
                     </a>
                 </li>
             </ul>
             <ul class="grid grid-cols-4 gap-2 mt-2">
                 <li v-for="m in menu" :class="{ 'col-span-4 ff-genshin text-sm': m.type === 'title' }">
                     <span v-if="m.type === 'group'" class="tooltip" :data-tip="m.title">
-                        <a href="#!" @click.prevent="toggleGroup(m.group)" class="btn btn-accent btn-square gap-2"
-                            :class="{ 'grayscale opacity-50': !m.active }">
+                        <a href="#!" @click.prevent="toggleGroup(m.group)" class="btn btn-square gap-2"
+                            :class="{ 'grayscale btn-outline opacity-25': !m.active }">
                             <img :src="m.icon" alt="" class="h-8 w-8">
                         </a>
                     </span>
@@ -86,7 +93,6 @@ function toggleGroup(id) {
     width: 250px;
     height: 100%;
     overflow: auto;
-    background: #e8e2d7;
 }
 
 #menu h1 {
@@ -96,7 +102,6 @@ function toggleGroup(id) {
 #menu #header {
     position: sticky;
     top: 0;
-    background: #3d4555;
     z-index: 9;
 }
 

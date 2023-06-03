@@ -18,3 +18,9 @@
 .ff-genshin {
     font-family: 'Genshin', sans-serif;
 }
+
+.btn.btn-primary:hover {
+    @apply text-primary;
+    background-color: #363F7E;
+    border-color: #363F7E;
+}
