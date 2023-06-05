@@ -50,7 +50,7 @@ export const useUserStore = defineStore('user', () => {
 
     function getToken() {
         const cookieToken = document.cookie.split("; ").find((row) => row.startsWith("token="))?.split("=")[1];
-        if (typeof token !== 'undefined') {
+        if (typeof cookieToken !== 'undefined') {
             token.value = cookieToken;
         }
     }
