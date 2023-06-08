@@ -1,4 +1,5 @@
 <script setup>
+import 'leaflet/dist/leaflet.css'
 import L from 'leaflet';
 import { ref, onMounted } from 'vue';
 import Navigation from '@/components/Navigation.vue';
@@ -100,7 +101,12 @@ onMounted(() => {
 
     // Initialisation de icons
     data.icons.forEach(icon => {
-      icons[icon.id] = L.icon({ iconUrl: UPLOADS + '/icons/' + icon.icon, iconSize: icon.iconSize, iconAnchor: icon.iconAnchor, popupAnchor: icon.popupAnchor });
+      icons[icon.id] = L.icon({
+        iconUrl: UPLOADS + '/icons/' + icon.icon,
+        iconSize: icon.iconSize,
+        iconAnchor: icon.iconAnchor,
+        popupAnchor: icon.popupAnchor
+      });
     });
 
     // Initialisation de groups
