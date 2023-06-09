@@ -76,6 +76,64 @@ function handleGoTo(x, y, z) {
   genshinMap.flyTo(unproject([x, y]), z);
 }
 
+function updateMarkerCheckbox(markerId, status) {
+  console.log('Marker:', markerId, status)
+}
+
+function popUpOpen(e) {
+  const { markerId, format, title, image, video, text, checkbox, guide } = e.popup.options;
+
+  let popupContent = '';
+
+  // Titre
+  popupContent += '<h4 class="text-sm font-bold mb-2">';
+  if (format === 'todo') {
+    popupContent += 'Marqueur ' + markerId;
+  } else {
+    popupContent += title;
+  }
+  popupContent += '</h4>';
+
+  // Média
+  if (format === 'image' && image) {
+    popupContent += '<a href="' + UPLOADS + '/medias/' + image + '" target="_blank" class="block mb-2"><img src="' + UPLOADS + '/medias/' + image + '" alt="" class="rounded-lg" /></a>';
+  } else if (format === 'banner' && image) {
+    popupContent += '<img src="' + UPLOADS + '/medias/' + image + '" alt="" class="block mb-2 rounded-lg" />';
+  } else if (format === 'video' && video) {
+    const match = video.match(/^.*(?:youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
+    if (match && match[1]) {
+      popupContent += '<a class="block mb-2" href="https://youtu.be/' + match[1] + '" target="_blank"><img src="https://i.ytimg.com/vi/' + match[1] + '/hqdefault.jpg" class="aspect-video object-cover rounded-lg" /></a>';
+    }
+  }
+
+  // Texte
+  if (format === 'todo') {
+    popupContent += '<p class="!mt-0 !mb-2 text-sm italic">Information pour ce marqueur prochainement disponible...</p>';
+  } else if (text) {
+    popupContent += '<p class="!mt-0 !mb-2 text-sm">' + text + '</p>';
+  }
+
+  // Guide
+  // Checkbox
+  if ((checkbox || guide) && format !== 'todo') {
+    popupContent += '<div class="flex gap-2 items-center justify-between">';
+    if (checkbox) {
+      popupContent += '<div class="form-control"><label class="label cursor-pointer gap-1 p-0"><input type="checkbox" class="toggle toggle-sm toggle-success" data-popup-checkbox="' + markerId + '" ';
+      // TODO : vérifier si le marker est terminé par l'user
+      if (true) {
+        popupContent += 'checked="checked"'
+      }
+      popupContent += ' /><span class="label-text text-black font-semibold">Terminé</span></label></div>';
+    }
+    if (guide) {
+      popupContent += '<a href="' + guide + '" target="_blank" class="btn btn-sm gap-2 justify-between">Guide <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4"><path fill-rule="evenodd" d="M4.25 5.5a.75.75 0 00-.75.75v8.5c0 .414.336.75.75.75h8.5a.75.75 0 00.75-.75v-4a.75.75 0 011.5 0v4A2.25 2.25 0 0112.75 17h-8.5A2.25 2.25 0 012 14.75v-8.5A2.25 2.25 0 014.25 4h5a.75.75 0 010 1.5h-5z" clip-rule="evenodd" /><path fill-rule="evenodd" d="M6.194 12.753a.75.75 0 001.06.053L16.5 4.44v2.81a.75.75 0 001.5 0v-4.5a.75.75 0 00-.75-.75h-4.5a.75.75 0 000 1.5h2.553l-9.056 8.194a.75.75 0 00-.053 1.06z" clip-rule="evenodd" /></svg></a>';
+    }
+    popupContent += '</div>';
+  }
+
+  e.popup.setContent(popupContent);
+}
+
 onMounted(() => {
 
   fetch(LBM_API + '/api/genshin/map/' + mapName).then(res => res.json()).then(data => {
@@ -97,7 +155,7 @@ onMounted(() => {
     genshinMap.setMaxBounds(new L.LatLngBounds(unproject([data.map.bounds[0], data.map.bounds[1]]), unproject([data.map.bounds[2], data.map.bounds[3]])));
 
     genshinMap.on('click', onMapClick);
-    // genshinMap.on('popupopen', popUpOpen);
+    genshinMap.on('popupopen', popUpOpen);
 
     // Initialisation de icons
     data.icons.forEach(icon => {
@@ -148,30 +206,22 @@ onMounted(() => {
 
       const icon = (m.iconId) ? m.iconId : g.iconId;
       const format = (m.format) ? m.format : g.format;
-      const text = (m.text) ? m.text : g.text;
-      const checkbox = g.checkbox;
-      const image = m.image;
-      const video = m.video;
-      const guide = (m.guide) ? m.guide : g.guide;
 
       const marker = L.marker(unproject([(m.x), (m.y)]), { icon: icons[icon], riseOnHover: true });
 
-      const _guide_ = (guide) ? '<a href="' + guide + '" class="guide" target="_blank">Guide</a>' : '';
-      const _checkbox_ = (checkbox) ? '<label><input type="checkbox" id="user-marker" data-id="' + m.slug + '" /><span>Terminé</span></label>' : '';
-      const _video_ = (video) ? 'TODO' : '';
-
-      if (format === 'popup') {
-        marker.bindPopup(m.title + text + _guide_ + _checkbox_);
-      } else if (format === 'video') {
-        marker.bindPopup(m.title + '<a class="video" href="//www.youtube.com/watch?v=' + _video_ + '" data-lity><img src="https://i.ytimg.com/vi/' + _video_ + '/hqdefault.jpg" /></a>' + text + _guide_ + _checkbox_);
-      } else if (format === 'image') {
-        marker.bindPopup(m.title + '<a href="' + UPLOADS + '/medias/' + image + '" class="image" data-lity><img src="thumb/' + image + '" /></a>' + text + _guide_ + _checkbox_);
-      } else if (format === 'banner') {
-        marker.bindPopup(m.title + '<img src="' + UPLOADS + '/medias/' + image + '" />' + text + _guide_ + _checkbox_);
-      } else if (format === 'region') {
+      if (format === 'region') {
         marker.bindTooltip(m.title, { permanent: true, className: 'region', offset: [0, 13], direction: 'top' }).openTooltip();
-      } else if (format === 'todo') {
-        marker.bindPopup('<h4>' + m.slug + '</h4>' + '<p><em>Information pour ce marqueur prochainement disponible...</em></p>' + _checkbox_);
+      } else if (format !== 'simple') {
+        marker.bindPopup('', {
+          format: format,
+          title: m.title,
+          text: (m.text) ? m.text : g.text,
+          guide: (m.guide) ? m.guide : g.guide,
+          image: m.image,
+          video: m.video,
+          checkbox: g.checkbox,
+          markerId: m.id
+        });
       }
 
       marker.addTo(groups[m.groupId]);
@@ -181,8 +231,13 @@ onMounted(() => {
     loading.value = false;
   });
 
+  document.addEventListener('click', (e) => {
+    if (e.target && e.target.dataset.popupCheckbox) {
+      updateMarkerCheckbox(e.target.dataset.popupCheckbox, e.target.checked);
+    }
+  });
 
-})
+});
 </script>
 
 <template>

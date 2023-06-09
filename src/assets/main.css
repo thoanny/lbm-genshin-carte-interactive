@@ -24,3 +24,28 @@
     background-color: #363F7E;
     border-color: #363F7E;
 }
+
+.leaflet-popup {
+    min-width: 300px;
+}
+
+.leaflet-popup .btn {
+    @apply text-white text-sm;
+}
+
+.leaflet-popup .toggle {
+    --tglbg: white;
+}
+
+.leaflet-popup-content {
+    margin: .5rem .75rem .75rem !important;
+}
+
+.leaflet-popup-close-button {
+    width: 2rem !important;
+    height: 2rem !important;
+    font-size: 1.25rem !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
