@@ -132,8 +132,7 @@ function popUpOpen(e) {
     popupContent += '<div class="flex gap-2 items-center justify-between">';
     if (checkbox && user.loggedIn) {
       popupContent += '<div class="form-control"><label class="label cursor-pointer gap-1 p-0"><input type="checkbox" class="toggle toggle-sm toggle-success" data-popup-checkbox="' + markerId + '" ';
-      // TODO : vérifier si le marker est terminé par l'user
-      if (user.markers && user.markers.indexOf(markerId) >= 0) {
+      if (user.userMarkers && user.userMarkers.indexOf(markerId) >= 0) {
         popupContent += 'checked="checked"'
       }
       popupContent += ' /><span class="label-text text-black font-semibold">Terminé</span></label></div>';
