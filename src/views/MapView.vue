@@ -264,7 +264,6 @@ onMounted(() => {
     }
 
     if (typeof (x) !== 'undefined' && typeof (y) !== 'undefined') {
-      console.log('zoom:', genshinMap.getMinZoom(), genshinMap.getMaxZoom())
       if (typeof (z) !== 'undefined' && z >= genshinMap.getMinZoom() && z <= genshinMap.getMaxZoom()) {
         genshinMap.setView(unproject([x, y]), z);
       } else {
