@@ -62,8 +62,8 @@ function toggleGroup(id) {
             </ul>
             <ul class="grid grid-cols-4 gap-2 mt-2">
                 <li v-for="m in menu" :class="{ 'col-span-4 ff-genshin text-sm': m.type === 'title' }">
-                    <span v-if="m.type === 'group'" class="tooltip" :data-tip="m.title">
-                        <a href="#!" @click.prevent="toggleGroup(m.group)" class="btn btn-square gap-2"
+                    <span v-if="m.type === 'group'">
+                        <a href="#!" @click.prevent="toggleGroup(m.group)" :title="m.title" class="btn btn-square gap-2"
                             :class="{ 'grayscale btn-outline opacity-25': !m.active }">
                             <img :src="m.icon" alt="" class="h-8 w-8">
                         </a>
