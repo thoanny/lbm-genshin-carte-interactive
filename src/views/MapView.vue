@@ -275,6 +275,12 @@ onMounted(() => {
 
 });
 
+watch(modal, (a, b) => {
+  if (b === 'video') {
+    modalMedia.value = null;
+  }
+});
+
 </script>
 
 <template>
@@ -411,7 +417,7 @@ onMounted(() => {
   <div class="modal bg-opacity-90">
     <div class="modal-box relative max-w-3xl p-0">
       <button class="btn btn-sm btn-circle absolute right-2 top-2" @click="handleModal">✕</button>
-      <iframe class="aspect-video w-full h-full" width="560" height="315"
+      <iframe v-if="modalMedia" class="aspect-video w-full h-full" width="560" height="315"
         :src="'https://www.youtube-nocookie.com/embed/' + modalMedia" title="YouTube video player" frameborder="0"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
         allowfullscreen></iframe>
