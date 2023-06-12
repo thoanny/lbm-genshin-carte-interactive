@@ -85,7 +85,7 @@ function handleGoTo(x, y, z) {
 }
 
 function updateMarkerCheckbox(markerId, add) {
-  user.updateMarker(add, mapName, markerId);
+  user.updateMarker(add, markerId);
   if (add) {
     markers[markerId].setOpacity(.5);
   } else {
