@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
+import { toast } from 'vue3-toastify';
 
 const LBM_API = 'https://api.lebusmagique.fr/api';
 
@@ -46,6 +47,9 @@ export const useUserStore = defineStore('user', () => {
             loggedIn.value = false;
             user.value = null;
             userMarkers.value = [];
+            toast.success("Vous avez été déconnecté·e.", {
+                autoClose: 3000,
+            });
         }
     }
 
@@ -147,16 +151,29 @@ export const useUserStore = defineStore('user', () => {
             body: JSON.stringify({ map: map.value, action: (add) ? 'add' : 'remove', marker: marker })
         }).then(res => {
             if (!res.ok) {
-                throw new Error('Erreur ' + res.status + ': (' + res.statusText + ')');
+                if (res.status === 401) {
+                    logout();
+                    throw new Error('Un compte existe déjà avec ce pseudonyme ou cette adresse e-mail.');
+                } else {
+                    throw new Error('Erreur ' + res.status + ': (' + res.statusText + ')');
+                }
             }
 
             if (add) {
                 userMarkers.value.push(parseInt(marker));
+                toast.success('Marqueur ajouté.', {
+                    autoClose: 3000,
+                });
             } else {
-                userMarkers.value = markers.value.filter(m => m !== parseInt(marker));
+                userMarkers.value = userMarkers.value.filter(m => m !== parseInt(marker));
+                toast.success('Marqueur supprimé.', {
+                    autoClose: 3000,
+                });
             }
-        }).then(() => {
-            return true;
+        }).catch(() => {
+            toast.error('Erreur lors de l\'ajout ou la suppression du suivi du marqueur...', {
+                autoClose: 3000,
+            });
         });
 
     }

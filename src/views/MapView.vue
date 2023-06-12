@@ -7,7 +7,7 @@ import Login from '@/components/Login.vue';
 import Register from '@/components/Register.vue';
 import { useRoute } from 'vue-router';
 import { useUserStore } from '@/stores/user.js';
-import { storeToRefs } from 'pinia'
+import { storeToRefs } from 'pinia';
 
 const route = useRoute();
 
@@ -32,6 +32,8 @@ const loading = ref(true);
 const modal = ref(null);
 const modalMedia = ref(null);
 const markersCount = ref(0);
+
+
 
 // Leaflet functions
 
