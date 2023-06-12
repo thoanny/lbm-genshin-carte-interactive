@@ -245,7 +245,8 @@ onMounted(() => {
       markersCount.value++;
     });
 
-    const resizeObserver = new ResizeObserver(() => {
+    const resizeObserver = new ResizeObserver((e) => {
+      console.log('observer:', e);
       genshinMap.invalidateSize();
     });
     resizeObserver.observe(document.getElementById('map'));
@@ -328,7 +329,7 @@ watch(modal, (a, b) => {
     id="loading">
     <span class="btn btn-ghost loading">Chargement de la carte en cours...</span>
   </div>
-  <div class="flex h-screen">
+  <div class="flex h-screen overflow-hidden">
     <Navigation :menuOpen="menuOpen" :menu="menu" :maps="maps" :markersCount="markersCount"
       @toggle-group="handleToggleGroup" @modal="handleModal" />
     <div id="map-wrap">
