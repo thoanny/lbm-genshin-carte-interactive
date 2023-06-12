@@ -186,8 +186,40 @@ export const useUserStore = defineStore('user', () => {
         return loggedIn.value;
     }
 
+    async function resetMarkers() {
+        if (!token.value) {
+            return;
+        }
+        await fetch(LBM_API + '/user/genshin/map/markers/reset', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token.value
+            },
+            body: JSON.stringify({ map: map.value })
+        }).then(res => {
+            if (!res.ok) {
+                if (res.status === 401) {
+                    logout();
+                    throw new Error('Vous n\'êtes pas ou plus connecté·e.');
+                } else {
+                    throw new Error('Erreur ' + res.status + ': (' + res.statusText + ')');
+                }
+            }
+
+            userMarkers.value = [];
+            toast.success('Suivi des marqueurs réinitialisé.', {
+                autoClose: 3000,
+            });
+        }).catch(() => {
+            toast.error('Erreur lors de la réinitialisation du suivi des marqueurs...', {
+                autoClose: 3000,
+            });
+        });
+    }
+
     getToken();
     getUser();
 
-    return { loggedIn, user, loading, userMarkers, login, logout, register, getUserMarkers, updateMarker, setMap, getLoggedIn }
+    return { loggedIn, user, loading, userMarkers, login, logout, register, getUserMarkers, updateMarker, setMap, getLoggedIn, resetMarkers }
 })

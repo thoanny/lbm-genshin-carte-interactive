@@ -74,10 +74,6 @@ function handleResetUserMarkers() {
   alert('TODO');
 }
 
-function handleAboutPopup() {
-  modal.value = 'about';
-}
-
 function handleModal(name = null) {
   modal.value = name;
 }
@@ -245,8 +241,7 @@ onMounted(() => {
       markersCount.value++;
     });
 
-    const resizeObserver = new ResizeObserver((e) => {
-      console.log('observer:', e);
+    const resizeObserver = new ResizeObserver(() => {
       genshinMap.invalidateSize();
     });
     resizeObserver.observe(document.getElementById('map'));
@@ -368,8 +363,8 @@ watch(modal, (a, b) => {
           </div>
         </div>
 
-        <div class="tooltip tooltip-right" data-tip="Réinitialiser le suivi des marqueurs">
-          <button class="btn btn-accent btn-square shadow btn-sm" @click="handleResetUserMarkers">
+        <div class="tooltip tooltip-right" data-tip="Réinitialiser le suivi des marqueurs" v-if="user.loggedIn">
+          <button class="btn btn-accent btn-square shadow btn-sm" @click="handleModal('reset')">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
               <path fill-rule="evenodd"
                 d="M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193V3.75A2.75 2.75 0 0011.25 1h-2.5zM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4zM8.58 7.72a.75.75 0 00-1.5.06l.3 7.5a.75.75 0 101.5-.06l-.3-7.5zm4.34.06a.75.75 0 10-1.5-.06l-.3 7.5a.75.75 0 101.5.06l.3-7.5z"
@@ -379,7 +374,7 @@ watch(modal, (a, b) => {
         </div>
 
         <div class="tooltip tooltip-right" data-tip="À propos">
-          <button class="btn btn-accent btn-square shadow btn-sm" @click="handleAboutPopup">
+          <button class="btn btn-accent btn-square shadow btn-sm" @click="handleModal('about')">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
               <path fill-rule="evenodd"
                 d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z"
@@ -462,6 +457,21 @@ watch(modal, (a, b) => {
         :src="'https://www.youtube-nocookie.com/embed/' + modalMedia" title="YouTube video player" frameborder="0"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
         allowfullscreen></iframe>
+    </div>
+  </div>
+
+  <input type="checkbox" class="modal-toggle" :checked="modal === 'reset'" />
+  <div class="modal bg-opacity-90">
+    <div class="modal-box relative">
+      <button class="btn btn-sm btn-circle absolute right-2 top-2" @click="handleModal">✕</button>
+      <h4 class="text-xl font-bold -mt-3 mb-4">Réinitialiser le suivi des marqueurs</h4>
+      <p>Êtes-vous sûr de vouloir supprimer le suivi de tous vos marqueurs pour cette carte&nbsp;? <strong>Cette action
+          est irréversible.</strong></p>
+      <div class="modal-action">
+        <button class="btn btn-error btn-block btn-outline"
+          @click="() => { user.resetMarkers(); handleModal(); }">Confirmer la
+          réinitialisation</button>
+      </div>
     </div>
   </div>
 </template>
