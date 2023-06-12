@@ -40,7 +40,7 @@ function unproject(coord) {
 }
 
 function onMapClick(e) {
-  console.log("@" + genshinMap.project([e.latlng.lat, e.latlng.lng], genshinMap.getMaxZoom()));
+  console.log("@" + genshinMap.project([e.latlng.lat, e.latlng.lng], genshinMap.getMaxZoom()) + " @Zoom(" + genshinMap.getZoom() + ")");
 }
 
 function handleToggleGroup(m) {
@@ -249,10 +249,35 @@ onMounted(() => {
     });
     resizeObserver.observe(document.getElementById('map'));
 
+    const { x, y, z, g, m } = route.query;
+
+    if (typeof (g) !== 'undefined') {
+      g.split(',').forEach(id => {
+        if (typeof groups[id] !== 'undefined') {
+          genshinMap.addLayer(groups[id]);
+          const i = menu.value.findIndex(m => m.type === 'group' && m.group === parseInt(id));
+          if (i >= 0) {
+            menu.value[i].active = true;
+          }
+        }
+      });
+    }
+
+    if (typeof (x) !== 'undefined' && typeof (y) !== 'undefined') {
+      console.log('zoom:', genshinMap.getMinZoom(), genshinMap.getMaxZoom())
+      if (typeof (z) !== 'undefined' && z >= genshinMap.getMinZoom() && z <= genshinMap.getMaxZoom()) {
+        genshinMap.setView(unproject([x, y]), z);
+      } else {
+        genshinMap.setView(unproject([x, y]), genshinMap.getMaxZoom());
+      }
+    }
+
+    if (typeof (m) !== 'undefined' && parseInt(m) === 0) {
+      menuOpen.value = false;
+    }
+
     loading.value = false;
   });
-
-
 
   document.addEventListener('click', (e) => {
     if (e.target && e.target.dataset.popupCheckbox) {
