@@ -261,6 +261,14 @@ onMounted(() => {
     }
   });
 
+  document.addEventListener("keydown", function (event) {
+    if (event.keyCode === 27) {
+      if (modal.value) {
+        modal.value = null;
+      }
+    }
+  });
+
   watch(userMarkers, () => {
     if (Object.keys(userMarkers.value).length === 0) {
       Object.entries(markers).forEach(m => {
