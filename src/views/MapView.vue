@@ -30,6 +30,7 @@ const menu = ref([]);
 const menuOpen = ref(true);
 const loading = ref(true);
 const modal = ref(null);
+const modalMedia = ref(null);
 const markersCount = ref(0);
 
 // Leaflet functions
@@ -108,13 +109,13 @@ function popUpOpen(e) {
 
   // Média
   if (format === 'image' && image) {
-    popupContent += '<a href="' + UPLOADS + '/medias/' + image + '" target="_blank" class="block mb-2"><img src="' + UPLOADS + '/medias/' + image + '" alt="" class="rounded-lg" /></a>';
+    popupContent += '<a href="' + UPLOADS + '/medias/' + image + '" target="_blank" class="block mb-2 relative aspect-video overflow-hidden rounded-lg modal-image"><div class="flex w-full h-full justify-center items-center"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-20 h-20 text-white"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607zM10.5 7.5v6m3-3h-6" /></svg></div><img src="' + UPLOADS + '/medias/' + image + '" alt="" class=" absolute top-0 w-full h-full object-cover" /></a>';
   } else if (format === 'banner' && image) {
     popupContent += '<img src="' + UPLOADS + '/medias/' + image + '" alt="" class="block mb-2 rounded-lg" />';
   } else if (format === 'video' && video) {
     const match = video.match(/^.*(?:youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
     if (match && match[1]) {
-      popupContent += '<a class="block mb-2" href="https://youtu.be/' + match[1] + '" target="_blank"><img src="https://i.ytimg.com/vi/' + match[1] + '/hqdefault.jpg" class="aspect-video object-cover rounded-lg" /></a>';
+      popupContent += '<a class="block mb-2 relative aspect-video overflow-hidden rounded-lg modal-video" href="https://youtu.be/' + match[1] + '" data-video-id="' + match[1] + '" target="_blank"><div class="flex w-full h-full justify-center items-center"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-20 h-20 text-white"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15.91 11.672a.375.375 0 010 .656l-5.603 3.113a.375.375 0 01-.557-.328V8.887c0-.286.307-.466.557-.327l5.603 3.112z" /></svg></div><img src="https://i.ytimg.com/vi/' + match[1] + '/hqdefault.jpg" class="absolute top-0 w-full h-full object-cover" /></a>';
     }
   }
 
@@ -249,6 +250,14 @@ onMounted(() => {
   document.addEventListener('click', (e) => {
     if (e.target && e.target.dataset.popupCheckbox) {
       updateMarkerCheckbox(e.target.dataset.popupCheckbox, e.target.checked);
+    } else if (e.target && e.target.closest('.modal-image')) {
+      e.preventDefault();
+      modal.value = 'image';
+      modalMedia.value = e.target.closest('.modal-image').href;
+    } else if (e.target && e.target.closest('.modal-video')) {
+      e.preventDefault();
+      modal.value = 'video';
+      modalMedia.value = e.target.closest('.modal-video').dataset.videoId;
     }
   });
 
@@ -356,7 +365,7 @@ onMounted(() => {
   </div>
 
   <input type="checkbox" class="modal-toggle" :checked="modal === 'about'" />
-  <div class="modal">
+  <div class="modal bg-opacity-90">
     <div class="modal-box">
       <h4 class="text-xl font-bold">Genshin Impact • Carte Interactive</h4>
       <p>Réalisée par Thoanny pour <a href="https://gaming.lebusmagique.fr" target="_blank"
@@ -377,16 +386,35 @@ onMounted(() => {
   </div>
 
   <input type="checkbox" class="modal-toggle" :checked="modal === 'login'" />
-  <div class="modal">
+  <div class="modal bg-opacity-90">
     <div class="modal-box relative">
       <Login @modal="handleModal" />
     </div>
   </div>
 
   <input type="checkbox" class="modal-toggle" :checked="modal === 'register'" />
-  <div class="modal">
+  <div class="modal bg-opacity-90">
     <div class="modal-box relative">
       <Register @modal="handleModal" />
+    </div>
+  </div>
+
+  <input type="checkbox" class="modal-toggle" :checked="modal === 'image'" />
+  <div class="modal bg-opacity-90">
+    <div class="modal-box relative max-w-3xl p-0">
+      <button class="btn btn-sm btn-circle absolute right-2 top-2" @click="handleModal">✕</button>
+      <img :src="modalMedia" alt="">
+    </div>
+  </div>
+
+  <input type="checkbox" class="modal-toggle" :checked="modal === 'video'" />
+  <div class="modal bg-opacity-90">
+    <div class="modal-box relative max-w-3xl p-0">
+      <button class="btn btn-sm btn-circle absolute right-2 top-2" @click="handleModal">✕</button>
+      <iframe class="aspect-video w-full h-full" width="560" height="315"
+        :src="'https://www.youtube-nocookie.com/embed/' + modalMedia" title="YouTube video player" frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen></iframe>
     </div>
   </div>
 </template>
