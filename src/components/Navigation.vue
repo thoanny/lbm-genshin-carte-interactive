@@ -18,9 +18,10 @@ function toggleGroup(id) {
 
 <template>
     <div class="overflow-y-auto flex-shrink-0" id="menu" :class="{ 'hidden': !menuOpen }">
-        <div class="p-4 text-center text-white border-b-2 border-base-300" id="header">
+        <div class="p-4 pb-0 text-center text-white" id="header">
             <div>
-                <h2 class="text-xs uppercase">Genshin Impact &bull; Carte&nbsp;Interactive</h2>
+                <h2 class="text-xs uppercase ff-genshin"><span class="text-base">Genshin Impact</span><br />&bull;
+                    Carte&nbsp;Interactive &bull; </h2>
             </div>
         </div>
         <div class="p-4">
