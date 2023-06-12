@@ -8,7 +8,8 @@ export const useUserStore = defineStore('user', () => {
     const loggedIn = ref(false);
     const token = ref(null);
     const user = ref(null);
-    const markers = ref([]);
+    const userMarkers = ref([]);
+    const map = ref(null);
 
     async function login(email, password) {
 
@@ -44,8 +45,8 @@ export const useUserStore = defineStore('user', () => {
             token.value = null;
             loggedIn.value = false;
             user.value = null;
+            userMarkers.value = [];
         }
-
     }
 
     function getToken() {
@@ -81,6 +82,7 @@ export const useUserStore = defineStore('user', () => {
         }).then(data => {
             loggedIn.value = true;
             user.value = data;
+            getUserMarkers();
         }).finally(() => {
             loading.value = false;
         });
@@ -107,8 +109,68 @@ export const useUserStore = defineStore('user', () => {
         });
     }
 
+    async function getUserMarkers() {
+        if (!token.value || !map.value) {
+            return;
+        }
+        await fetch(LBM_API + '/user/genshin/map/' + map.value, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token.value
+            }
+        }).then(res => {
+            if (!res.ok) {
+                if (res.status === 409) {
+                    throw new Error('Un compte existe déjà avec ce pseudonyme ou cette adresse e-mail.');
+                }
+
+                throw new Error('Erreur ' + res.status + ': (' + res.statusText + ')');
+            }
+            return res.json()
+        }).then(data => {
+            userMarkers.value = data;
+        });
+    }
+
+    async function updateMarker(add, marker) {
+
+        if (!token.value || !map.value) {
+            return;
+        }
+
+        await fetch(LBM_API + '/user/genshin/map/marker', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token.value
+            },
+            body: JSON.stringify({ map: map.value, action: (add) ? 'add' : 'remove', marker: marker })
+        }).then(res => {
+            if (!res.ok) {
+                throw new Error('Erreur ' + res.status + ': (' + res.statusText + ')');
+            }
+
+            if (add) {
+                userMarkers.value.push(parseInt(marker));
+            } else {
+                userMarkers.value = markers.value.filter(m => m !== parseInt(marker));
+            }
+        }).then(() => {
+            return true;
+        });
+
+    }
+
+    function setMap(m) {
+        map.value = m;
+    }
+
+    function getLoggedIn() {
+        return loggedIn.value;
+    }
+
     getToken();
     getUser();
 
-    return { loggedIn, user, markers, loading, login, logout, register }
+    return { loggedIn, user, loading, userMarkers, login, logout, register, getUserMarkers, updateMarker, setMap, getLoggedIn }
 })

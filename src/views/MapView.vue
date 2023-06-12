@@ -1,11 +1,13 @@
 <script setup>
 import 'leaflet/dist/leaflet.css'
 import L from 'leaflet';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import Navigation from '@/components/Navigation.vue';
 import Login from '@/components/Login.vue';
 import Register from '@/components/Register.vue';
 import { useRoute } from 'vue-router';
+import { useUserStore } from '@/stores/user.js';
+import { storeToRefs } from 'pinia'
 
 const route = useRoute();
 
@@ -13,10 +15,15 @@ const LBM_API = 'https://api.lebusmagique.fr';
 const UPLOADS = LBM_API + '/uploads/api/genshin/maps';
 
 const mapName = (typeof route.params.slug !== 'undefined') ? route.params.slug : 'teyvat';
+const user = useUserStore();
+user.setMap(mapName);
+
+const { userMarkers } = storeToRefs(user);
 
 let genshinMap;
 let icons = {};
 let groups = {};
+let markers = {};
 
 const maps = ref([]);
 const menu = ref([]);
@@ -76,8 +83,13 @@ function handleGoTo(x, y, z) {
   genshinMap.flyTo(unproject([x, y]), z);
 }
 
-function updateMarkerCheckbox(markerId, status) {
-  console.log('Marker:', markerId, status)
+function updateMarkerCheckbox(markerId, add) {
+  user.updateMarker(add, mapName, markerId);
+  if (add) {
+    markers[markerId].setOpacity(.5);
+  } else {
+    markers[markerId].setOpacity(1);
+  }
 }
 
 function popUpOpen(e) {
@@ -117,13 +129,15 @@ function popUpOpen(e) {
   // Checkbox
   if ((checkbox || guide) && format !== 'todo') {
     popupContent += '<div class="flex gap-2 items-center justify-between">';
-    if (checkbox) {
+    if (checkbox && user.loggedIn) {
       popupContent += '<div class="form-control"><label class="label cursor-pointer gap-1 p-0"><input type="checkbox" class="toggle toggle-sm toggle-success" data-popup-checkbox="' + markerId + '" ';
       // TODO : vérifier si le marker est terminé par l'user
-      if (true) {
+      if (user.markers && user.markers.indexOf(markerId) >= 0) {
         popupContent += 'checked="checked"'
       }
       popupContent += ' /><span class="label-text text-black font-semibold">Terminé</span></label></div>';
+    } else if (checkbox && !user.loggedIn) {
+      popupContent += '<div class="alert alert-info rounded-lg"><div><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current flex-shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span>Créez un compte et/ou connectez-vous pour utiliser le suivi des marqueurs.</span></div></div>';
     }
     if (guide) {
       popupContent += '<a href="' + guide + '" target="_blank" class="btn btn-sm gap-2 justify-between">Guide <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4"><path fill-rule="evenodd" d="M4.25 5.5a.75.75 0 00-.75.75v8.5c0 .414.336.75.75.75h8.5a.75.75 0 00.75-.75v-4a.75.75 0 011.5 0v4A2.25 2.25 0 0112.75 17h-8.5A2.25 2.25 0 012 14.75v-8.5A2.25 2.25 0 014.25 4h5a.75.75 0 010 1.5h-5z" clip-rule="evenodd" /><path fill-rule="evenodd" d="M6.194 12.753a.75.75 0 001.06.053L16.5 4.44v2.81a.75.75 0 001.5 0v-4.5a.75.75 0 00-.75-.75h-4.5a.75.75 0 000 1.5h2.553l-9.056 8.194a.75.75 0 00-.053 1.06z" clip-rule="evenodd" /></svg></a>';
@@ -225,6 +239,7 @@ onMounted(() => {
       }
 
       marker.addTo(groups[m.groupId]);
+      markers[m.id] = marker;
       markersCount.value++;
     });
 
@@ -237,7 +252,20 @@ onMounted(() => {
     }
   });
 
+  watch(userMarkers, () => {
+    if (Object.keys(userMarkers.value).length === 0) {
+      Object.entries(markers).forEach(m => {
+        markers[m[0]] = m[1].setOpacity(1);
+      });
+    } else {
+      userMarkers.value.forEach(m => {
+        markers[m].setOpacity(.5);
+      });
+    }
+  });
+
 });
+
 </script>
 
 <template>
