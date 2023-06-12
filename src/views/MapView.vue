@@ -244,8 +244,15 @@ onMounted(() => {
       markersCount.value++;
     });
 
+    const resizeObserver = new ResizeObserver(() => {
+      genshinMap.invalidateSize();
+    });
+    resizeObserver.observe(document.getElementById('map'));
+
     loading.value = false;
   });
+
+
 
   document.addEventListener('click', (e) => {
     if (e.target && e.target.dataset.popupCheckbox) {
