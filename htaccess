@@ -1,0 +1,8 @@
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /genshin-carte-interactive
+RewriteRule ^genshin-carte-interactive/index\.html$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /genshin-carte-interactive/index.html [L]
+</IfModule>
