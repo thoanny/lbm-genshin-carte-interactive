@@ -1,16 +1,39 @@
 <script setup>
+import { ref, watch } from 'vue';
 import { useUserStore } from '@/stores/user.js';
 
 const props = defineProps(['menuOpen', 'menu', 'maps', 'markersCount']);
 const emit = defineEmits(['toggleGroup', 'modal']);
 
 const user = useUserStore();
+const userMenu = ref([]);
+
+watch(props.menu, (m) => {
+    const localMenu = window.localStorage.getItem('menu');
+    if (localMenu) {
+        userMenu.value = JSON.parse(localMenu);
+        userMenu.value.forEach(id => {
+            const i = props.menu.findIndex(m => m.type === 'group' && m.group === id);
+            if (i >= 0) {
+                props.menu[i].active = true;
+                emit('toggleGroup', props.menu[i]);
+            }
+        });
+    }
+})
 
 function toggleGroup(id) {
     const i = props.menu.findIndex(m => m.type === 'group' && m.group === id);
     if (i >= 0) {
         props.menu[i].active = !props.menu[i].active;
         emit('toggleGroup', props.menu[i]);
+
+        if (props.menu[i].active && userMenu.value.findIndex(m => m === id) < 0) {
+            userMenu.value.push(id);
+        } else if (!props.menu[i].active && userMenu.value.findIndex(m => m === id) >= 0) {
+            userMenu.value = userMenu.value.filter(m => m !== id);
+        }
+        window.localStorage.setItem('menu', JSON.stringify(userMenu.value));
     }
 }
 
