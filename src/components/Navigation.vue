@@ -25,18 +25,18 @@ function toggleGroup(id) {
             </div>
         </div>
         <div class="p-4">
-            <ul class="grid grid-cols-4 gap-2">
-                <li class="col-span-4" v-if="user.loading">
+            <ul class="grid grid-cols-2 gap-1">
+                <li class="col-span-2" v-if="user.loading">
                     <button class="btn btn-sm btn-block gap-2 text-xs btn-ghost loading">Connexion...</button>
                 </li>
-                <li class="col-span-2" v-if="!user.loggedIn">
+                <li class="" v-if="!user.loggedIn">
                     <button class="btn btn-sm btn-block gap-2 text-xs" @click="$emit('modal', 'login')">Connexion</button>
                 </li>
-                <li class="col-span-2" v-if="!user.loggedIn">
+                <li class="" v-if="!user.loggedIn">
                     <button class="btn btn-sm btn-block gap-2 text-xs"
                         @click="$emit('modal', 'register')">Inscription</button>
                 </li>
-                <li v-if="user.user" class="col-span-4">
+                <li v-if="user.user" class="col-span-2">
                     <div class="flex gap-2 items-center bg-neutral-focus p-2 rounded-xl">
                         <div class="avatar">
                             <div class="w-14 rounded-lg">
@@ -47,26 +47,30 @@ function toggleGroup(id) {
                             <div class="text-sm font-semibold uppercase">
                                 {{ user.user.nickname }}
                             </div>
-                            <button class="btn btn-xs btn-error gap-2  text-xs btn-block" @click="user.logout">
+                            <button class="btn btn-xs btn-error gap-1 text-xs btn-block" @click="user.logout">
                                 Déconnexion
                             </button>
                         </div>
                     </div>
                 </li>
-                <li v-for="m in maps" class="tooltip" :data-tip="m.name">
+                <li class="ff-genshin text-sm mt-2 mb-1">Cartes</li>
+                <li v-for="m in maps" class="col-span-2">
                     <a :href="$router.resolve({ name: 'map', params: { slug: m.slug } }).href"
-                        class="btn btn-primary btn-block btn-square gap-2"
+                        class="btn btn-primary btn-block btn-sm gap-1 justify-start text-xs text-left text-white hover:!text-white"
                         :class="{ 'opacity-50 hover:opacity-100': !m.active }">
-                        <img :src="m.icon" alt="" class="w-8 h-8 grayscale brightness-200" />
+                        <img :src="m.icon" alt="" class="w-5 h-5 grayscale brightness-200" />
+                        {{ m.name }}
                     </a>
                 </li>
             </ul>
-            <ul class="grid grid-cols-4 gap-2 mt-2">
-                <li v-for="m in menu" :class="{ 'col-span-4 ff-genshin text-sm': m.type === 'title' }">
+            <ul class="grid grid-cols-1 gap-1 mt-2">
+                <li v-for="m in menu" :class="{ 'ff-genshin text-sm mt-2 mb-1': m.type === 'title' }">
                     <span v-if="m.type === 'group'">
-                        <a href="#!" @click.prevent="toggleGroup(m.group)" :title="m.title" class="btn btn-square gap-2"
-                            :class="{ 'grayscale btn-outline opacity-25': !m.active }">
-                            <img :src="m.icon" alt="" class="h-8 w-8">
+                        <a href="#!" @click.prevent="toggleGroup(m.group)" :title="m.title"
+                            class="btn btn-block justify-start text-xs btn-sm gap-1 text-left"
+                            :class="{ 'grayscale btn-outline opacity-50': !m.active }">
+                            <img :src="m.icon" alt="" class="h-5 w-5">
+                            <span class="truncate flex-1">{{ m.title }}</span>
                         </a>
                     </span>
                     <span v-else>{{ m.title }}</span>
@@ -94,20 +98,5 @@ function toggleGroup(id) {
     width: 250px;
     height: 100%;
     overflow: auto;
-}
-
-#menu h1 {
-    font-family: 'Genshin', serif;
-}
-
-#menu #header {
-    position: sticky;
-    top: 0;
-    z-index: 9;
-}
-
-#menu .title {
-    @apply text-sm;
-    font-family: 'Genshin', sans-serif;
 }
 </style>

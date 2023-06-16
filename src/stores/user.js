@@ -35,14 +35,14 @@ export const useUserStore = defineStore('user', () => {
             }
             token.value = data.token;
             loggedIn.value = true;
-            document.cookie = "token=" + data.token + "; samesite=strict; max-age=" + 119 * 60;
+            document.cookie = "token=" + data.token + "; Secure; samesite=strict; max-age=" + 119 * 60;
             getUser();
         });
     }
 
     function logout() {
         if (token.value) {
-            document.cookie = "token=" + token.value + "; samesite=strict; max-age=0";
+            document.cookie = "token=" + token.value + "; Secure; samesite=strict; max-age=0";
             token.value = null;
             loggedIn.value = false;
             user.value = null;
