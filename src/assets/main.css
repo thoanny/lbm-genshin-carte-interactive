@@ -15,6 +15,28 @@
     font-display: swap;
 }
 
+/* ===== Scrollbar CSS ===== */
+/* Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #c2c7e3 #1b1d2a;
+}
+
+/* Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+    width: 10px;
+}
+
+*::-webkit-scrollbar-track {
+    background: #1b1d2a;
+}
+
+*::-webkit-scrollbar-thumb {
+    background-color: #c2c7e3;
+    border-radius: 5px;
+    border: 2px solid #1b1d2a;
+}
+
 .ff-genshin {
     font-family: 'Genshin', sans-serif;
 }

@@ -24,7 +24,7 @@ function toggleGroup(id) {
                     Carte&nbsp;Interactive &bull; </h2>
             </div>
         </div>
-        <div class="p-4">
+        <div class="py-4 px-2">
             <ul class="grid grid-cols-2 gap-1">
                 <li class="col-span-2" v-if="user.loading">
                     <button class="btn btn-sm btn-block gap-2 text-xs btn-ghost loading">Connexion...</button>
@@ -53,13 +53,13 @@ function toggleGroup(id) {
                         </div>
                     </div>
                 </li>
-                <li class="ff-genshin text-sm mt-2 mb-1">Cartes</li>
+                <li class="ff-genshin text-sm mt-2 mb-1 col-span-2">Cartes</li>
                 <li v-for="m in maps" class="col-span-2">
                     <a :href="$router.resolve({ name: 'map', params: { slug: m.slug } }).href"
                         class="btn btn-primary btn-block btn-sm gap-1 justify-start text-xs text-left text-white hover:!text-white"
                         :class="{ 'opacity-50 hover:opacity-100': !m.active }">
                         <img :src="m.icon" alt="" class="w-5 h-5 grayscale brightness-200" />
-                        {{ m.name }}
+                        <span class="truncate flex-1">{{ m.name }}</span>
                     </a>
                 </li>
             </ul>
@@ -95,7 +95,7 @@ function toggleGroup(id) {
 
 <style scoped>
 #menu {
-    width: 250px;
+    width: 240px;
     height: 100%;
     overflow: auto;
 }
