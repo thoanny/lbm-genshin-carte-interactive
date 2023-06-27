@@ -412,15 +412,15 @@ watch(modal, (a, b) => {
       <h4 class="text-xl font-bold">Genshin Impact • Carte Interactive</h4>
       <p>Réalisée par Thoanny pour <a href="https://gaming.lebusmagique.fr" target="_blank"
           class="font-semibold underline">Le Bus
-          Magique</a>. <br />Mise à jour par l'équipe LBM Gaming.</p>
+          Magique</a>. <br />Cartes mises à jour par l'équipe LBM Gaming.</p>
       <h4 class="text-xl font-bold mt-4">Suivi des marqueurs</h4>
-      <p>Si vous n'êtes pas connecté·e, cette carte interactive utilise la fonction "localStorage" pour enregistrer le
-        suivi de vos
-        marqueurs. Ces informations sont stockées directement dans votre navigateur.</p>
+      <p>Vous devez vous connecter pour utiliser la fonction de suivi des marqueurs. Un cookie de connexion est créé à la
+        connexion pour une durée de 1&nbsp;heure.</p>
+      <h4 class="text-xl font-bold mt-4">Menu de navigation</h4>
+      <p>Les catégories activées dans le menu sont enregistrées dans votre navigateur avec la fonction "localStorage".</p>
       <h4 class="text-xl font-bold mt-4">Se connecter avec Discord</h4>
-      <p>En vous identifiant avec Discord, le suivi de vos marqueurs ainsi que l'état de votre menu
-        (éléments actifs/inactifs) sont enregistrés dans une base de données, pour vous offrir une expérience continue
-        entre vos différentes sessions.</p>
+      <p>Cette fonction a été supprimée. Pour vous connecter, vous devez créer un compte Le Bus Magique en
+        cliquant sur le bouton "Inscription".</p>
       <div class="modal-action">
         <button @click="handleModal" class="btn btn-block">Fermer</button>
       </div>
