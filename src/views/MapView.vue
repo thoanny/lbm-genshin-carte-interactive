@@ -92,12 +92,13 @@ function updateMarkerCheckbox(markerId, add) {
 }
 
 function popUpOpen(e) {
-  const { markerId, format, title, image, video, text, checkbox, guide } = e.popup.options;
+  const { markerId, format, title, image, video, text, checkbox, guide, icon } = e.popup.options;
 
   let popupContent = '';
 
   // Titre
-  popupContent += '<h4 class="text-sm font-bold mb-2">';
+  popupContent += '<h4 class="text-sm font-bold mb-2 flex items-center gap-1">';
+  popupContent += '<img src="' + icon.options.iconUrl + '" class="h-6 w-6 self-start" />'
   if (format === 'todo') {
     popupContent += 'Marqueur ' + markerId;
   } else {
@@ -232,7 +233,8 @@ onMounted(() => {
           image: m.image,
           video: m.video,
           checkbox: g.checkbox,
-          markerId: m.id
+          markerId: m.id,
+          icon: icons[icon]
         });
       }
 
